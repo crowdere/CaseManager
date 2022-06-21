@@ -1,20 +1,23 @@
 from django.shortcuts import render, redirect
-from .models import Investigation
+from django.db.models import Q
+from .models import Investigation, Case
 from .forms import InvestigationForm
 # Create your views here.
 
 
-# NO LONGER USING
-# investigations = [
-#     {'id':1,'name':'COMP-DHG001983'},
-#     {'id':2,'name':'PCAP-DHG001983'},
-#     {'id':3,'name':'MEM-DHG001983'},
-# ]
-
-
 def home(request):
-    investigations = Investigation.objects.all()
-    context = {'investigations':investigations}
+    q = request.GET.get('q') if request.GET.get('q') != None else '' 
+
+    investigations = Investigation.objects.filter(
+            Q(case__name__icontains=q) |
+            Q(name__icontains=q) |
+            Q(description__icontains=q)
+        )
+
+    cases = Case.objects.all()
+    investigation_count = investigations.count()
+
+    context = {'investigations':investigations, 'cases':cases, 'investigation_count':investigation_count}
     return render(request, 'base/home.html', context)
 
 
@@ -22,6 +25,7 @@ def investigation(request, pk):
     investigation = Investigation.objects.get(id=pk)
     context = {'investigation': investigation}
     return render(request, 'base/investigation.html', context)
+
 
 def createInvestigation(request):
     form = InvestigationForm()
@@ -35,6 +39,7 @@ def createInvestigation(request):
     context = {'form':form}
     return render(request, 'base/investigation_form.html', context)
 
+
 def updateInvestigation(request, pk):
     investigation = Investigation.objects.get(id=pk)
     form = InvestigationForm(instance=investigation)
@@ -47,6 +52,7 @@ def updateInvestigation(request, pk):
 
     context = {'form': form}
     return render(request, 'base/investigation_form.html/', context)
+
 
 def deleteInvestigation(request, pk):
     investigation = investigation = Investigation.objects.get(id=pk)
