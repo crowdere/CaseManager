@@ -12,6 +12,7 @@
 
 
 {% if request.user.is_authenticated %}
+    <p> Hello {{request.user}} - Last Logged in {{request.user.last_login}}</p>
     <a href="{% url 'logout' %}"> Logout </a>
 {% else %}
     <a href="{% url 'login' %}"> Login </a>
