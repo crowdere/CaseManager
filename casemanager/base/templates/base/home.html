@@ -32,8 +32,10 @@
         <div>
                 {% for investigation in investigations %}
                 <div>
-                    <a href="{% url 'delete-investigation' investigation.id %}">  Delete </a> |
-                    <a href="{% url 'update-investigation' investigation.id %}"> Edit </a>
+                    {% if request.user == investigation.host %}
+                        <a href="{% url 'delete-investigation' investigation.id %}">  Delete </a> |
+                        <a href="{% url 'update-investigation' investigation.id %}"> Edit </a>
+                    {% endif %}
                     <span> @{{investigation.host.username}}</span>
                     <h5>{{investigation.id}} -- <a href="{% url 'investigation' investigation.id %}">  {{investigation.name}}</a></h5>
                     <small>{{investigation.case.name}}</small>

@@ -1,8 +1,42 @@
 from django.shortcuts import render, redirect
 from django.db.models import Q
+from django.http import HttpResponse
+from django.contrib.auth.models import User
+from django.contrib import messages
+from django.contrib.auth.decorators import login_required
+from django.contrib.auth import authenticate, login, logout
 from .models import Investigation, Case
 from .forms import InvestigationForm
 # Create your views here.
+
+
+def loginPage(request):
+    if request.user.is_authenticated:
+        return redirect('home')
+
+    if request.method == 'POST':
+        username = request.POST.get('username')
+        password = request.POST.get('password')
+
+        try:
+            user = User.objects.get(username=username)
+        except:
+            messages.error(request, 'User does not exist!')
+
+        user = authenticate(request, username=username, password=password)
+        
+        if user is not None:
+            login(request, user)
+            return redirect('home')
+        else:
+            messages.error(request, 'Username or password does not exist')
+    context = {}
+    return render(request, 'base/login_register.html', context)
+
+
+def logoutUser(request):
+    logout(request)
+    return redirect('home')
 
 
 def home(request):
@@ -21,12 +55,14 @@ def home(request):
     return render(request, 'base/home.html', context)
 
 
+
 def investigation(request, pk):
     investigation = Investigation.objects.get(id=pk)
     context = {'investigation': investigation}
     return render(request, 'base/investigation.html', context)
 
 
+@login_required(login_url='login')
 def createInvestigation(request):
     form = InvestigationForm()
 
@@ -40,9 +76,13 @@ def createInvestigation(request):
     return render(request, 'base/investigation_form.html', context)
 
 
+@login_required(login_url='login')
 def updateInvestigation(request, pk):
     investigation = Investigation.objects.get(id=pk)
     form = InvestigationForm(instance=investigation)
+
+    if request.user != investigation.host:
+        return HttpResponse('You are not allowed here.')
 
     if request.method == 'POST':
             form = InvestigationForm(request.POST, instance=investigation)
@@ -54,8 +94,13 @@ def updateInvestigation(request, pk):
     return render(request, 'base/investigation_form.html/', context)
 
 
+@login_required(login_url='login')
 def deleteInvestigation(request, pk):
     investigation = investigation = Investigation.objects.get(id=pk)
+    
+    if request.user != investigation.host:
+        return HttpResponse('You are not allowed here.')
+    
     if request.method == 'POST':
         investigation.delete()
         return redirect('home')
