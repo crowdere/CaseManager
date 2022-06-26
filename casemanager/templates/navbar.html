@@ -9,8 +9,6 @@
     <input type="text" name="q" placeholder="Search Investigations" />
 </form>
 
-
-
 {% if request.user.is_authenticated %}
     <p> Hello {{request.user}} - Last Logged in {{request.user.last_login}}</p>
     <a href="{% url 'logout' %}"> Logout </a>

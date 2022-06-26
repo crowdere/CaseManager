@@ -14,7 +14,7 @@ class Investigation(models.Model):
     case = models.ForeignKey(Case, on_delete=models.SET_NULL, null=True)
     name = models.CharField(max_length=200)
     description = models.TextField(null=True, blank=True)
-    #participants = 
+    participants = models.ManyToManyField(User, related_name='Investigator', blank=True)
     updated = models.DateTimeField(auto_now=True)
     created = models.DateTimeField(auto_now_add=True)
 

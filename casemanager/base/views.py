@@ -6,7 +6,7 @@ from django.contrib import messages
 from django.contrib.auth.decorators import login_required
 from django.contrib.auth import authenticate, login, logout
 from django.contrib.auth.forms import UserCreationForm
-from .models import Investigation, Case
+from .models import Investigation, Case, Message
 from .forms import InvestigationForm
 
 
@@ -78,7 +78,21 @@ def home(request):
 
 def investigation(request, pk):
     investigation = Investigation.objects.get(id=pk)
-    context = {'investigation': investigation}
+    #we can query child objects of a room. To get all the childrend we can specific the  name model_set
+    investigation_messages = investigation.message_set.all().order_by('-created')
+    participants = investigation.participants.all()
+
+    if request.method == "POST":
+        message = Message.objects.create(
+            user = request.user,
+            investigation=investigation,
+            body=request.POST.get('body')
+        )
+        investigation.participants.add(request.user)
+        return redirect('investigation', pk=investigation.id)
+
+
+    context = {'investigation': investigation, 'investigation_messages': investigation_messages, 'participants':participants}
     return render(request, 'base/investigation.html', context)
 
 
@@ -125,3 +139,16 @@ def deleteInvestigation(request, pk):
         investigation.delete()
         return redirect('home')
     return render(request, 'base/delete.html', {'obj':investigation})
+
+
+@login_required(login_url='login')
+def deleteMessage(request, pk):
+    message = Message.objects.get(id=pk)
+    
+    if request.user != message.user:
+        return HttpResponse('You are not allowed here.')
+    
+    if request.method == 'POST':
+        message.delete()
+        return redirect('home')
+    return render(request, 'base/delete.html', {'obj':message})
