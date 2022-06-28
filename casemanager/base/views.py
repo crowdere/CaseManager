@@ -124,7 +124,9 @@ def createInvestigation(request):
     if request.method == 'POST':
         form = InvestigationForm(request.POST)
         if form.is_valid():
-            form.save()
+            investigation = form.save(commit=False)
+            investigation.host = request.user
+            investigation.save()
             return redirect('home')
             
     context = {'form':form}

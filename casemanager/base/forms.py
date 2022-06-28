@@ -5,4 +5,4 @@ class InvestigationForm(ModelForm):
     class Meta:
         model = Investigation
         fields = '__all__'
-    
+        exclude = ['host', 'participants']
