@@ -1,0 +1,11 @@
+<h3> Recent Cases </h3>
+<hr>
+<div>   
+    <a href="{% url 'home' %}"> All </a>
+</div>
+
+{% for case in cases %}
+    <div>   
+        <a href="{% url 'home' %}?q={{case.name}}">{{case.name}}</a>
+    </div>
+{% endfor %}

@@ -1,0 +1,16 @@
+
+<div>
+        {% for investigation in investigations %}
+        <div>
+            {% if request.user == investigation.host %}
+                <a href="{% url 'delete-investigation' investigation.id %}">  Delete </a> |
+                <a href="{% url 'update-investigation' investigation.id %}"> Edit </a>
+            {% endif %}
+            <a href="{% url 'user-profile' investigation.host.id %}"> @{{investigation.host.username}}</a>
+            <h5>{{investigation.id}} -- <a href="{% url 'investigation' investigation.id %}">  {{investigation.name}}</a></h5>
+            <small>{{investigation.case.name}}</small>
+            <hr>
+        </div>
+
+        {% endfor %}
+</div>

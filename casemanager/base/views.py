@@ -59,6 +59,7 @@ def registerPage(request):
     context = {'form':form}
     return render(request, 'base/login_register.html', context)
 
+
 def home(request):
     q = request.GET.get('q') if request.GET.get('q') != None else '' 
 
@@ -70,8 +71,13 @@ def home(request):
 
     cases = Case.objects.all()
     investigation_count = investigations.count()
+    investigation_messages = Message.objects.filter(Q(investigation__case__name__icontains=q))
 
-    context = {'investigations':investigations, 'cases':cases, 'investigation_count':investigation_count}
+    context = {'investigations':investigations,
+               'cases':cases,
+               'investigation_count':investigation_count,
+               'investigation_messages':investigation_messages}
+               
     return render(request, 'base/home.html', context)
 
 
@@ -94,6 +100,21 @@ def investigation(request, pk):
 
     context = {'investigation': investigation, 'investigation_messages': investigation_messages, 'participants':participants}
     return render(request, 'base/investigation.html', context)
+
+
+
+def userProfile(request,pk):
+    user = User.objects.get(id=pk)
+    investigations = user.investigation_set.all()
+    investigation_messages = user.message_set.all()
+    cases = Case.objects.all()
+
+    context = {'user':user,
+               'investigations': investigations,
+               'investigation_messages':investigation_messages,
+               'case':cases}
+
+    return render(request, 'base/profile.html', context)
 
 
 @login_required(login_url='login')
