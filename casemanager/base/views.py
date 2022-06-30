@@ -112,7 +112,7 @@ def userProfile(request,pk):
     context = {'user':user,
                'investigations': investigations,
                'investigation_messages':investigation_messages,
-               'case':cases}
+               'cases':cases}
 
     return render(request, 'base/profile.html', context)
 
@@ -120,16 +120,22 @@ def userProfile(request,pk):
 @login_required(login_url='login')
 def createInvestigation(request):
     form = InvestigationForm()
+    cases = Case.objects.all()
 
     if request.method == 'POST':
         form = InvestigationForm(request.POST)
-        if form.is_valid():
-            investigation = form.save(commit=False)
-            investigation.host = request.user
-            investigation.save()
-            return redirect('home')
+        case_name = request.POST.get('case')
+        case, created = Case.objects.get_or_create(name=case_name) 
+
+        Investigation.objects.create(
+            host=request.user,
+            case=case,
+            name=request.POST.get('name'),
+            description=request.POST.get('description'),
+        )  
+        return redirect('home')
             
-    context = {'form':form}
+    context = {'form':form, 'cases':cases}
     return render(request, 'base/investigation_form.html', context)
 
 
@@ -137,17 +143,21 @@ def createInvestigation(request):
 def updateInvestigation(request, pk):
     investigation = Investigation.objects.get(id=pk)
     form = InvestigationForm(instance=investigation)
+    cases = Case.objects.all()
 
     if request.user != investigation.host:
         return HttpResponse('You are not allowed here.')
 
     if request.method == 'POST':
-            form = InvestigationForm(request.POST, instance=investigation)
-            if form.is_valid():
-                form.save()
-                return redirect('home')
+        case_name = request.POST.get('case')
+        case, created = Case.objects.get_or_create(name=case_name) 
+        investigation.name = request.POST.get('name')
+        investigation.case = case
+        investigation.description = request.POST.get('description')
+        investigation.save()
+        return redirect('home')
 
-    context = {'form': form}
+    context = {'form': form, 'cases':cases, 'investigation':investigation}
     return render(request, 'base/investigation_form.html/', context)
 
 
