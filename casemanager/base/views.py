@@ -8,7 +8,9 @@ from django.contrib.auth import authenticate, login, logout
 from django.contrib.auth.forms import UserCreationForm
 from .models import Investigation, Case, Message
 from .forms import InvestigationForm
-
+import pandas as pd
+from plotly.offline import plot
+import plotly.express as px
 
 # Create your views here.
 
@@ -60,7 +62,29 @@ def registerPage(request):
     return render(request, 'base/login_register.html', context)
 
 
+
+
+
 def home(request):
+    ## CHART TEST
+    import datetime
+
+    projects_data = [{'Project': 'Review user GEO history','Start': (datetime.datetime.now()+ datetime.timedelta(days=-4)),'Finish': (datetime.datetime.now()),'Responsible':'Ahmad Chaiban'}, 
+    {'Project': 'Contain users devices','Start': (datetime.datetime.now()),'Finish': (datetime.datetime.now() + datetime.timedelta(days=2)),'Responsible':'Edward Crowder'}]
+
+    df = pd.DataFrame(projects_data)
+    fig = px.timeline(df, x_start="Start", x_end="Finish", y="Project", color="Responsible")
+    fig.update_layout({
+        'paper_bgcolor':'rgba(0,0,0,0)',
+        'plot_bgcolor':'rgba(0,0,0,0)'
+    })
+    fig.update_layout(legend_font_color='white') 
+    fig.update_layout(font_color='white') 
+
+    #fig.update_yaxes(autorange="reversed")
+    gantt_plot = plot(fig, output_type="div")
+    ## END OF CHART TEST
+
     q = request.GET.get('q') if request.GET.get('q') != None else '' 
 
     investigations = Investigation.objects.filter(
@@ -76,7 +100,8 @@ def home(request):
     context = {'investigations':investigations,
                'cases':cases,
                'investigation_count':investigation_count,
-               'investigation_messages':investigation_messages}
+               'investigation_messages':investigation_messages,
+               'plot_div': gantt_plot}
                
     return render(request, 'base/home.html', context)
 

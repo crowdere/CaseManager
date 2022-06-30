@@ -16,7 +16,6 @@
           </a>
           <h3>Investigation Room</h3>
         </div>
-
         {% if investigation.host == request.user %}
         <div class="room__topRight">
           <a href="{% url 'update-investigation' investigation.id %}">
@@ -109,7 +108,7 @@
 
               </div>
               <div class="thread__details">
-                {{message}}
+                {{message.body}}
               </div>
             </div>
             {% endfor %}
