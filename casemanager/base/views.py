@@ -39,7 +39,7 @@ def loginPage(request):
     context = {'page': page}
     return render(request, 'base/login_register.html', context)
 
-
+@login_required(login_url='login')
 def logoutUser(request):
     logout(request)
     return redirect('home')
@@ -61,7 +61,7 @@ def registerPage(request):
     context = {'form':form}
     return render(request, 'base/login_register.html', context)
 
-
+@login_required(login_url='login')
 def home(request):
     q = request.GET.get('q') if request.GET.get('q') != None else '' 
 
@@ -78,11 +78,13 @@ def home(request):
     ## CHART TEST
     projects_data = []
     
+    # We need to itterate through all cases to check if its open, on-going, or closed
+    # Open means new most likely, on-going means not closed and we take last message time, closed means closed time should be not null
+    # we should also do front end to lock comments if closed.
     for x in investigations:
         #If the close time (#TODO ADD CLOSE TIME) is null, lets use their last message as the last
         # date since the case is on-going
         # if its a new case, lets just use the case.updated time since its brand new and is equal to its creation
-        
         try:
             project = {'Case': x.name,
                     'Start': (x.created),
@@ -117,7 +119,7 @@ def home(request):
     return render(request, 'base/home.html', context)
 
 
-
+@login_required(login_url='login')
 def investigation(request, pk):
     investigation = Investigation.objects.get(id=pk)
     #we can query child objects of a room. To get all the childrend we can specific the  name model_set
@@ -138,7 +140,7 @@ def investigation(request, pk):
     return render(request, 'base/investigation.html', context)
 
 
-
+@login_required(login_url='login')
 def userProfile(request,pk):
     user = User.objects.get(id=pk)
     investigations = user.investigation_set.all()
