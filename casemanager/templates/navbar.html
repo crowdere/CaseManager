@@ -61,9 +61,11 @@
         </nav>
       </div>
     </header>
-
-
-
+    <hr>
+    {% autoescape off %}
+        {{ plot_div }}
+    {% endautoescape %}
+    <hr>
 <!-- {% if request.user.is_authenticated %}
     <p> Hello {{request.user}} - Last Logged in {{request.user.last_login}}</p>
     <a href="{% url 'logout' %}"> Logout </a>

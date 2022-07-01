@@ -11,7 +11,7 @@ from .forms import InvestigationForm
 import pandas as pd
 from plotly.offline import plot
 import plotly.express as px
-
+import datetime
 # Create your views here.
 
 
@@ -62,29 +62,7 @@ def registerPage(request):
     return render(request, 'base/login_register.html', context)
 
 
-
-
-
 def home(request):
-    ## CHART TEST
-    import datetime
-
-    projects_data = [{'Project': 'Review user GEO history','Start': (datetime.datetime.now()+ datetime.timedelta(days=-4)),'Finish': (datetime.datetime.now()),'Responsible':'Ahmad Chaiban'}, 
-    {'Project': 'Contain users devices','Start': (datetime.datetime.now()),'Finish': (datetime.datetime.now() + datetime.timedelta(days=2)),'Responsible':'Edward Crowder'}]
-
-    df = pd.DataFrame(projects_data)
-    fig = px.timeline(df, x_start="Start", x_end="Finish", y="Project", color="Responsible")
-    fig.update_layout({
-        'paper_bgcolor':'rgba(0,0,0,0)',
-        'plot_bgcolor':'rgba(0,0,0,0)'
-    })
-    fig.update_layout(legend_font_color='white') 
-    fig.update_layout(font_color='white') 
-
-    #fig.update_yaxes(autorange="reversed")
-    gantt_plot = plot(fig, output_type="div")
-    ## END OF CHART TEST
-
     q = request.GET.get('q') if request.GET.get('q') != None else '' 
 
     investigations = Investigation.objects.filter(
@@ -96,6 +74,39 @@ def home(request):
     cases = Case.objects.all()
     investigation_count = investigations.count()
     investigation_messages = Message.objects.filter(Q(investigation__case__name__icontains=q))
+    
+    ## CHART TEST
+    projects_data = []
+    
+    for x in investigations:
+        #If the close time (#TODO ADD CLOSE TIME) is null, lets use their last message as the last
+        # date since the case is on-going
+        # if its a new case, lets just use the case.updated time since its brand new and is equal to its creation
+        
+        try:
+            project = {'Case': x.name,
+                    'Start': (x.created),
+                    'Finish': (x.message_set.all()[0].updated),
+                    'Responsible':str(x.host)}
+        except:
+                 project = {'Case': x.name,
+                    'Start': (x.created),
+                    'Finish': (x.updated),
+                    'Responsible':str(x.host)}
+        projects_data.append(project)
+  
+    df = pd.DataFrame(projects_data)
+    fig = px.timeline(df, x_start="Start", x_end="Finish", y="Case", color="Responsible", height=375)
+    fig.update_layout({
+        'paper_bgcolor':'rgba(0,0,0,0)',
+        'plot_bgcolor':'rgba(0,0,0,0)'
+    })
+    fig.update_layout(legend_font_color='white') 
+    fig.update_layout(font_color='white') 
+
+    #fig.update_yaxes(autorange="reversed")
+    gantt_plot = plot(fig, output_type="div")
+    ## END OF CHART TEST
 
     context = {'investigations':investigations,
                'cases':cases,
