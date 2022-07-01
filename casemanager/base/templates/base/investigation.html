@@ -148,7 +148,7 @@
         <!-- INDICATORS -->
         <h3 class="participants__top">Indicators <span>({{indicators|length}})</span></h3>
         {% for indicator in indicators %}
-          {{indicator}} <br>
+          {{indicator.type}} {{indicator.value}} <br>
         {% endfor %}
         <!-- INDICATORS -->
     </div>

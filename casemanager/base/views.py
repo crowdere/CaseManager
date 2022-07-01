@@ -12,6 +12,7 @@ import pandas as pd
 from plotly.offline import plot
 import plotly.express as px
 import datetime
+from multidecoder.multidecoder import Multidecoder
 # Create your views here.
 
 
@@ -136,8 +137,14 @@ def investigation(request, pk):
         return redirect('investigation', pk=investigation.id)
 
     #TODO add in the indicator extraction for each message in message.
-    indicators = {'8.8.8.8', 'hxxp://malware.ru'}
-
+    md = Multidecoder()
+    indicators = []
+    for message in investigation_messages:
+        context_tree = md.scan(str.encode(message.body))       
+        for item in context_tree:
+            indicators.append({'type':item['type'], 'value':item['value']})
+            print(indicators)
+    
     context = {'investigation': investigation,
      'investigation_messages': investigation_messages,
       'participants':participants,
