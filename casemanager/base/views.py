@@ -135,8 +135,13 @@ def investigation(request, pk):
         investigation.participants.add(request.user)
         return redirect('investigation', pk=investigation.id)
 
+    #TODO add in the indicator extraction for each message in message.
+    indicators = {'8.8.8.8', 'hxxp://malware.ru'}
 
-    context = {'investigation': investigation, 'investigation_messages': investigation_messages, 'participants':participants}
+    context = {'investigation': investigation,
+     'investigation_messages': investigation_messages,
+      'participants':participants,
+      'indicators':indicators}
     return render(request, 'base/investigation.html', context)
 
 
