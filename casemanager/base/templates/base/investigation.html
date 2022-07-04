@@ -151,6 +151,13 @@
           {{indicator.type}} {{indicator.value}} <br>
         {% endfor %}
         <!-- INDICATORS -->
+        <!-- Intel Reports -->
+        <br>
+        <h3 class="participants__top">Recommended Intel <span>({{reports|length}})</span></h3>
+        {% for report in reports %}
+          <a href="{{report.url}} "> {{report.title}} </a>
+        {% endfor %}
+        <!-- INDICATORS -->
     </div>
     <!-- END-->
   </div>

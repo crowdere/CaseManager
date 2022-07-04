@@ -7,11 +7,10 @@ from django.contrib.auth.decorators import login_required
 from django.contrib.auth import authenticate, login, logout
 from django.contrib.auth.forms import UserCreationForm
 from .models import Investigation, Case, Message
-from .forms import InvestigationForm
+from .forms import InvestigationForm, UserForm
 import pandas as pd
 from plotly.offline import plot
 import plotly.express as px
-import datetime
 from multidecoder.multidecoder import Multidecoder
 # Create your views here.
 
@@ -90,16 +89,16 @@ def home(request):
             project = {'Case': x.name,
                     'Start': (x.created),
                     'Finish': (x.message_set.all()[0].updated),
-                    'Responsible':str(x.host)}
+                    'Analyst':str(x.host)}
         except:
                  project = {'Case': x.name,
                     'Start': (x.created),
                     'Finish': (x.updated),
-                    'Responsible':str(x.host)}
+                    'Analyst':str(x.host)}
         projects_data.append(project)
   
     df = pd.DataFrame(projects_data)
-    fig = px.timeline(df, x_start="Start", x_end="Finish", y="Case", color="Responsible", height=375)
+    fig = px.timeline(df, x_start="Start", x_end="Finish", y="Case", color="Analyst", height=375)
     fig.update_layout({
         'paper_bgcolor':'rgba(0,0,0,0)',
         'plot_bgcolor':'rgba(0,0,0,0)'
@@ -136,7 +135,7 @@ def investigation(request, pk):
         investigation.participants.add(request.user)
         return redirect('investigation', pk=investigation.id)
 
-    #TODO add in the indicator extraction for each message in message.
+    #Indicator extraction
     md = Multidecoder()
     indicators = []
     for message in investigation_messages:
@@ -145,10 +144,15 @@ def investigation(request, pk):
             indicators.append({'type':item['type'], 'value':item['value']})
             print(indicators)
     
+    ## Report look up from ahmads part - switch this to JS front end
+    reports = [{'title':'CVE-2015-0097 Exploited in the Wild', 'url':'https://www.fireeye.com/blog/threat-research/2015/07/cve-2015-0097_exploi.html'},
+               {'title':'How Can I Tell if a URL is Safe?', 'url':'https://www.webroot.com/ca/en/resources/tips-articles/how-can-i-tell-if-a-url-is-safe'},]
+    ##
     context = {'investigation': investigation,
      'investigation_messages': investigation_messages,
       'participants':participants,
-      'indicators':indicators}
+      'indicators':indicators,
+      'reports':reports}
     return render(request, 'base/investigation.html', context)
 
 
@@ -235,3 +239,18 @@ def deleteMessage(request, pk):
         message.delete()
         return redirect('home')
     return render(request, 'base/delete.html', {'obj':message})
+
+
+@login_required(login_url='login')
+def updateUser(request):
+    user = request.user
+    form = UserForm(instance=user)
+
+    if request.method == 'POST':
+        form = UserForm(request.POST, instance=user)
+        if form.is_valid():
+            form.save()
+            return redirect('user-profile', pk=user.id)
+
+    context = {'form':form}
+    return render(request, 'base/update-user.html', context)
