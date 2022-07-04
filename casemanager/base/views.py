@@ -96,18 +96,26 @@ def home(request):
                     'Finish': (x.updated),
                     'Analyst':str(x.host)}
         projects_data.append(project)
-  
-    df = pd.DataFrame(projects_data)
-    fig = px.timeline(df, x_start="Start", x_end="Finish", y="Case", color="Analyst", height=375)
-    fig.update_layout({
-        'paper_bgcolor':'rgba(0,0,0,0)',
-        'plot_bgcolor':'rgba(0,0,0,0)'
-    })
-    fig.update_layout(legend_font_color='white') 
-    fig.update_layout(font_color='white') 
+    try:
+        df = pd.DataFrame(projects_data)
+        fig = px.timeline(df, x_start="Start", x_end="Finish", y="Case", color="Analyst", height=375)
+        fig.update_layout({
+            'paper_bgcolor':'rgba(0,0,0,0)',
+            'plot_bgcolor':'rgba(0,0,0,0)'
+        })
+        fig.update_layout(legend_font_color='white') 
+        fig.update_layout(font_color='white') 
 
-    #fig.update_yaxes(autorange="reversed")
-    gantt_plot = plot(fig, output_type="div")
+        #fig.update_yaxes(autorange="reversed")
+        gantt_plot = plot(fig, output_type="div")
+    except:
+        gantt_plot = """
+        <div style="min-height:275px;">
+        <center>
+        No Investigations to visualize...
+        </center>
+        </div>
+        """
     ## END OF CHART TEST
 
     context = {'investigations':investigations,

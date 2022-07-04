@@ -39,10 +39,10 @@
             </div>
           {% else %}
           <!-- Not Logged In -->
-            <a href="{% url 'login' %}">
+            <!-- <a href="{% url 'login' %}">
                 <img src="{% static 'images/avatar.svg' %}"/>
                 <p>Login</p>
-            </a>
+            </a> -->
           {% endif %}
           <div class="dropdown-menu">
             <a href="{% url 'update-user' %}" class="dropdown-link"
