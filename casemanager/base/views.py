@@ -149,8 +149,7 @@ def investigation(request, pk):
     for message in investigation_messages:
         context_tree = md.scan(str.encode(message.body))       
         for item in context_tree:
-            indicators.append({'type':item['type'], 'value':item['value']})
-            print(indicators)
+            indicators.append({'type':item['type'], 'value':item['value'].decode("utf-8")})
     
     ## Report look up from ahmads part - switch this to JS front end
     reports = [{'title':'CVE-2015-0097 Exploited in the Wild', 'url':'https://www.fireeye.com/blog/threat-research/2015/07/cve-2015-0097_exploi.html'},
