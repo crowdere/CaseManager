@@ -193,6 +193,9 @@ def createInvestigation(request):
             case=case,
             name=request.POST.get('name'),
             description=request.POST.get('description'),
+            state=request.POST.get('state'),
+            priority=request.POST.get('priority'),
+            severity=request.POST.get('severity'),
         )  
         return redirect('home')
             
@@ -215,6 +218,9 @@ def updateInvestigation(request, pk):
         investigation.name = request.POST.get('name')
         investigation.case = case
         investigation.description = request.POST.get('description')
+        investigation.state = request.POST.get('state')
+        investigation.priority = request.POST.get('priority')
+        investigation.severity = request.POST.get('severity')
         investigation.save()
         return redirect('home')
 

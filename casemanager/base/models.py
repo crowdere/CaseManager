@@ -17,11 +17,17 @@ class Investigation(models.Model):
     host = models.ForeignKey(User, on_delete=models.SET_NULL, null=True)
     case = models.ForeignKey(Case, on_delete=models.SET_NULL, null=True)
     name = models.CharField(max_length=200)
+    #update these to be multi select from hard coded field
+    state = models.CharField(max_length=200, default='New')
+    priority = models.CharField(max_length=200,null=True, blank=True)
+    severity = models.CharField(max_length=200,null=True, blank=True)
+    #update above to be multi select from hard coded list
     description = models.TextField(null=True, blank=True)
     participants = models.ManyToManyField(User, related_name='Investigator', blank=True)
     updated = models.DateTimeField(auto_now=True)
     created = models.DateTimeField(auto_now_add=True)
 
+    
     class Meta:
         ordering = ['-updated', 'created']
 

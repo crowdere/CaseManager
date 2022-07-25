@@ -72,10 +72,23 @@
               <span>@{{investigation.host.username}}</span>
             </a>
           </div>
+          <hr>
           <div class="room__details">
+            <label>Description</label><br>
             {{investigation.description}}
           </div>
+          <hr>
+          <label>Parent Case Name</label>
           <span class="room__topics">{{investigation.case.name}}</span>
+          
+          <label>State</label>
+          <span class="room__topics">{{investigation.state}}</span>
+          
+          <label>Priority</label>
+          <span class="room__topics--{{investigation.priority}}">{{investigation.priority}}</span>
+          
+          <label>Severity</label>
+          <span class="room__topics--{{investigation.severity}}">{{investigation.severity}}</span>
         </div>
 
         <div class="room__conversation">

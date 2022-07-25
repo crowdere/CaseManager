@@ -64,8 +64,8 @@ a {
 
 /*========== components ==========*/
 .container {
-  max-width: 120rem;
-  width: 90%;
+  /* max-width: 140rem; */
+  width: 96%;
   margin: auto;
 }
 
@@ -407,11 +407,11 @@ a {
 }
 
 .layout--3 > .container > div:nth-child(2) {
-  flex-basis: 50%;
+  flex-basis: 65%;
 }
 
 .layout--3 > .container > div:last-child {
-  flex-basis: 25%;
+  flex-basis: 15%;
 }
 
 .layout--2 > .container > div:first-child {
@@ -1044,6 +1044,35 @@ a {
   border-radius: 1.5rem;
   margin: 1rem 0;
 }
+/* TODO BAD CSS Fix this */
+.room__topics--High{
+  padding: 0.5rem 1.5rem;
+  background:#D13E06;
+  color: var(--color-dark);
+  display: inline-block;
+  font-size: 1.4rem;
+  border-radius: 1.5rem;
+  margin: 1rem 0;
+}
+.room__topics--Medium{
+  padding: 0.5rem 1.5rem;
+  background:#f1ab09;
+  color: var(--color-dark);
+  display: inline-block;
+  font-size: 1.4rem;
+  border-radius: 1.5rem;
+  margin: 1rem 0;
+}
+.room__topics--Low{
+  padding: 0.5rem 1.5rem;
+  background:#0A58B7;
+  color: var(--color-light);
+  display: inline-block;
+  font-size: 1.4rem;
+  border-radius: 1.5rem;
+  margin: 1rem 0;
+}
+/* TODO BAD CSS Fix this */
 
 .room__conversation {
   margin-top: 1rem;
