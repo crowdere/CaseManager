@@ -71,7 +71,7 @@ def home(request):
             Q(description__icontains=q)
         )
 
-    cases = Case.objects.all()
+    cases = Case.objects.all()[0:5]
     investigation_count = investigations.count()
     investigation_messages = Message.objects.filter(Q(investigation__case__name__icontains=q))
     
@@ -261,3 +261,18 @@ def updateUser(request):
 
     context = {'form':form}
     return render(request, 'base/update-user.html', context)
+
+@login_required(login_url='login')
+def casesPage(request):
+    #Until we add a filter, acts as .all()
+    q = request.GET.get('q') if request.GET.get('q') != None else '' 
+    cases = Case.objects.filter(name__icontains=q)
+    context = {'cases':cases}
+    return render(request, 'base/cases.html', context)
+
+@login_required(login_url='login')
+def activityPage(request):
+    #Until we add a filter, acts as .all()
+    investigation_messages = Message.objects.all()[0:5]
+    context = {'investigation_messages':investigation_messages}
+    return render(request, 'base/activity.html', context)
