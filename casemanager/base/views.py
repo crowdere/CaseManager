@@ -169,7 +169,6 @@ def userProfile(request,pk):
     investigations = user.investigation_set.all()
     investigation_messages = user.message_set.all()
     cases = Case.objects.all()
-
     context = {'user':user,
                'investigations': investigations,
                'investigation_messages':investigation_messages,
